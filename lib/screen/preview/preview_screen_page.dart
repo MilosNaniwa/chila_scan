@@ -34,7 +34,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 
   FaceDetector _faceDetector;
 
-  EyesPositionModel _eyesPositionModel;
+  List<EyesPositionModel> _eyesPositionModelList;
 
   Image _imageFile;
   imgLib.Image _imgLibFile;
@@ -104,7 +104,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 
           if (faceList.length != 0) {
             try {
-              _eyesPositionModel = _scannerUtil.detectPositionOfEyes(
+              _eyesPositionModelList = _scannerUtil.detectPositionOfEyes(
                 faceList: faceList,
                 imageWidth: _imgLibFile.width.toDouble(),
                 imageHeight: _imgLibFile.height.toDouble(),
@@ -221,21 +221,43 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                                     _imgLibFile.width),
                           ),
                           _isDetected
-                              ? CustomPaint(
-                                  size: Size(
-                                    MediaQuery.of(context).size.width * 0.9,
-                                    _imgLibFile.height *
-                                        (MediaQuery.of(context).size.width *
-                                            0.9 /
-                                            _imgLibFile.width),
-                                  ),
-                                  painter: ChikaPainter(
-                                    position1:
-                                        _eyesPositionModel.leftEyePosition,
-                                    position2:
-                                        _eyesPositionModel.rightEyePosition,
-                                  ),
+                              ? Stack(
+                                  children: _eyesPositionModelList.map(
+                                    (model) {
+                                      return CustomPaint(
+                                        size: Size(
+                                          MediaQuery.of(context).size.width *
+                                              0.9,
+                                          _imgLibFile.height *
+                                              (MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.9 /
+                                                  _imgLibFile.width),
+                                        ),
+                                        painter: ChikaPainter(
+                                          position1: model.leftEyePosition,
+                                          position2: model.rightEyePosition,
+                                        ),
+                                      );
+                                    },
+                                  ).toList(),
                                 )
+//                          CustomPaint(
+//                                  size: Size(
+//                                    MediaQuery.of(context).size.width * 0.9,
+//                                    _imgLibFile.height *
+//                                        (MediaQuery.of(context).size.width *
+//                                            0.9 /
+//                                            _imgLibFile.width),
+//                                  ),
+//                                  painter: ChikaPainter(
+//                                    position1: _eyesPositionModelList
+//                                        .first.leftEyePosition,
+//                                    position2: _eyesPositionModelList
+//                                        .first.rightEyePosition,
+//                                  ),
+//                                )
                               : Container(),
                         ],
                       ),

@@ -12,6 +12,7 @@ import 'package:chika_scan/screen/preview/preview_screen_page.dart';
 import 'package:chika_scan/util/chika_painter_util.dart';
 import 'package:chika_scan/util/scanner_util.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -46,7 +47,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
 
   bool _isDetected;
 
-  EyesPositionModel _eyesPositionModel;
+  List<EyesPositionModel> _eyesPositionModelList;
 
   @override
   void initState() {
@@ -212,7 +213,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
               if (faceList.length != 0) {
                 try {
                   setState(() {
-                    _eyesPositionModel = _scannerUtil.detectPositionOfEyes(
+                    _eyesPositionModelList = _scannerUtil.detectPositionOfEyes(
                       faceList: faceList,
                       imageWidth: availableImage.width.toDouble(),
                       imageHeight: availableImage.height.toDouble(),
@@ -418,17 +419,21 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                             ),
                           ),
                           _isDetected
-                              ? CustomPaint(
-                                  size: Size(
-                                    MediaQuery.of(context).size.width,
-                                    MediaQuery.of(context).size.height,
-                                  ),
-                                  painter: ChikaPainter(
-                                    position1:
-                                        _eyesPositionModel.leftEyePosition,
-                                    position2:
-                                        _eyesPositionModel.rightEyePosition,
-                                  ),
+                              ? Stack(
+                                  children: _eyesPositionModelList.map(
+                                    (model) {
+                                      return CustomPaint(
+                                        size: Size(
+                                          MediaQuery.of(context).size.width,
+                                          MediaQuery.of(context).size.height,
+                                        ),
+                                        painter: ChikaPainter(
+                                          position1: model.leftEyePosition,
+                                          position2: model.rightEyePosition,
+                                        ),
+                                      );
+                                    },
+                                  ).toList(),
                                 )
                               : Container(),
                           Column(
