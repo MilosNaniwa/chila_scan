@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:chika_scan/common/custom_exception.dart';
 import 'package:chika_scan/common/error_code.dart';
@@ -14,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as imgLib;
 import 'package:path_provider/path_provider.dart';
 
 class ChikaScanScreenPage extends StatefulWidget {
@@ -363,6 +367,19 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
           final path = (await getTemporaryDirectory()).path + '$fileName.png';
 
           await _cameraController.takePicture(path);
+
+          final _imgLibFile = imgLib.decodeImage(
+            await File(
+              path,
+            ).readAsBytes(),
+          );
+
+          final result = await FlutterImageCompress.compressWithFile(
+            path,
+//            rotate: _imgLibFile.exif.orientation,
+          );
+
+          await File(path).writeAsBytes(result);
 
           await Navigator.of(context).push(
             MaterialPageRoute(

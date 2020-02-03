@@ -85,9 +85,13 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
       listener: (context, state) async {
         // 初期化後
         if (state is InitializedState) {
-          final FirebaseVisionImage visionImage =
-              FirebaseVisionImage.fromFilePath(
-            widget.imageFilePath,
+          print(_imgLibFile.width);
+          print(_imgLibFile.height);
+
+          final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(
+            File(
+              widget.imageFilePath,
+            ),
           );
 
           final List<Face> faceList = await _faceDetector.processImage(
@@ -101,8 +105,8 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                 imageWidth: _imgLibFile.width.toDouble(),
                 imageHeight: _imgLibFile.height.toDouble(),
                 isUsedFrontCamera: widget.isUsedFrontCamera,
-                campusWidth: _imgLibFile.width.toDouble(),
-                campusHeight: _imgLibFile.height.toDouble(),
+                campusWidth: 300,
+                campusHeight: 400,
               );
               _isDetected = true;
 
@@ -135,29 +139,35 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
             appBar: AppBar(
               title: Text("プレビュー"),
             ),
-            body: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    _imageFile,
-                    _isDetected
-                        ? CustomPaint(
-                            size: Size(
-                              _imgLibFile.width.toDouble(),
-                              _imgLibFile.height.toDouble(),
-                            ),
-                            painter: ChikaPainter(
-                              position1: _eyesPositionModel.leftEyePosition,
-                              position2: _eyesPositionModel.rightEyePosition,
-                            ),
-                          )
-                        : Container(),
-                  ],
-                ),
-              ],
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        child: _imageFile,
+                        width: 300,
+                        height: 400,
+                      ),
+                      _isDetected
+                          ? CustomPaint(
+                              size: Size(
+                                300,
+                                400,
+                              ),
+                              painter: ChikaPainter(
+                                position1: _eyesPositionModel.leftEyePosition,
+                                position2: _eyesPositionModel.rightEyePosition,
+                              ),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },
