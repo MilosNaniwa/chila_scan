@@ -111,7 +111,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
 
           _cameraController = CameraController(
             _cameraModel.availableCameraList[_currentCamera],
-            ResolutionPreset.low,
+            ResolutionPreset.high,
           );
 
           try {
