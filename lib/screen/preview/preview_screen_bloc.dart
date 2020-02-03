@@ -21,5 +21,15 @@ class PreviewScreenBloc extends Bloc<PreviewScreenEvent, PreviewScreenState> {
     else if (event is OnCompleteRenderingEvent) {
       yield IdlingState();
     }
+
+    // 画像共有要求
+    else if (event is OnRequestSharingImageEvent) {
+      yield ImageSharingState();
+    }
+
+    // 画像共有完了
+    else if (event is OnCompleteSharingImageEvent) {
+      yield ImageSharedState();
+    }
   }
 }

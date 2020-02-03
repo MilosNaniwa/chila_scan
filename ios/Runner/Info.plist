@@ -28,6 +28,8 @@
 	<string>顔認識のためにカメラを利用します</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>顔認識のためにマイクを利用します</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>画像保存のためにストレージへアクセスします</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>

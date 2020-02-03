@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:chika_scan/common/custom_exception.dart';
 import 'package:chika_scan/common/error_code.dart';
@@ -6,8 +7,10 @@ import 'package:chika_scan/model/eyes_position_model.dart';
 import 'package:chika_scan/screen/preview/preview_screen.dart';
 import 'package:chika_scan/util/chika_painter_util.dart';
 import 'package:chika_scan/util/scanner_util.dart';
+import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as imgLib;
 
@@ -38,9 +41,13 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 
   bool _isDetected;
 
+  GlobalKey _globalKey;
+
   @override
   void initState() {
     super.initState();
+
+    _globalKey = GlobalKey();
 
     _isDetected = false;
 
@@ -117,7 +124,18 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
               print(_eyesPositionModel.rightEyePosition);
             } on CustomException catch (e) {
               if (e.errorCode == ErrorCode.cannotDetectEyes) {
-                print("目を検出できませんでした");
+                await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    content: Text("目を検出できませんでした"),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text("OK"),
+                      )
+                    ],
+                  ),
+                );
               }
             } catch (e, stackTrace) {
               print(e);
@@ -126,9 +144,53 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
               throw e;
             }
           } else {
-            print("顔を検出できませんでした");
+            await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                content: Text("顔を検出できませんでした"),
+                actions: <Widget>[
+                  FlatButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text("OK"),
+                  )
+                ],
+              ),
+            );
           }
 
+          _bloc.add(
+            OnCompleteRenderingEvent(),
+          );
+        }
+
+        // 画像共有中
+        else if (state is ImageSharingState) {
+          RenderRepaintBoundary boundary =
+              _globalKey.currentContext.findRenderObject();
+
+          ui.Image image = await boundary.toImage(
+            pixelRatio: 3.0,
+          );
+
+          final byteData = await image.toByteData(
+            format: ui.ImageByteFormat.png,
+          );
+
+          await Share.file(
+            '地下化',
+            '地下化.png',
+            byteData.buffer.asUint8List(),
+            'image/png',
+            text: '地下化しました',
+          );
+
+          _bloc.add(
+            OnCompleteSharingImageEvent(),
+          );
+        }
+
+        // 画像共有後
+        else if (state is ImageSharedState) {
           _bloc.add(
             OnCompleteRenderingEvent(),
           );
@@ -142,40 +204,64 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
             appBar: AppBar(
               title: Text("プレビュー"),
             ),
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Stack(
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        child: _imageFile,
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        height: _imgLibFile.height *
-                            (MediaQuery.of(context).size.width *
-                                0.9 /
-                                _imgLibFile.width),
+            body: SingleChildScrollView(
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                    ),
+                    RepaintBoundary(
+                      key: _globalKey,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            child: _imageFile,
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            height: _imgLibFile.height *
+                                (MediaQuery.of(context).size.width *
+                                    0.9 /
+                                    _imgLibFile.width),
+                          ),
+                          _isDetected
+                              ? CustomPaint(
+                                  size: Size(
+                                    MediaQuery.of(context).size.width * 0.9,
+                                    _imgLibFile.height *
+                                        (MediaQuery.of(context).size.width *
+                                            0.9 /
+                                            _imgLibFile.width),
+                                  ),
+                                  painter: ChikaPainter(
+                                    position1:
+                                        _eyesPositionModel.leftEyePosition,
+                                    position2:
+                                        _eyesPositionModel.rightEyePosition,
+                                  ),
+                                )
+                              : Container(),
+                        ],
                       ),
-                      _isDetected
-                          ? CustomPaint(
-                              size: Size(
-                                MediaQuery.of(context).size.width * 0.9,
-                                _imgLibFile.height *
-                                    (MediaQuery.of(context).size.width *
-                                        0.9 /
-                                        _imgLibFile.width),
-                              ),
-                              painter: ChikaPainter(
-                                position1: _eyesPositionModel.leftEyePosition,
-                                position2: _eyesPositionModel.rightEyePosition,
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                ],
+                    ),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.share,
+                      ),
+                      iconSize: 45.0,
+                      onPressed: () {
+                        _bloc.add(
+                          OnRequestSharingImageEvent(),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           );

@@ -24,3 +24,13 @@ class IdlingState extends PreviewScreenState {
   @override
   String toString() => '待機中';
 }
+
+class ImageSharingState extends PreviewScreenState {
+  @override
+  String toString() => '画像共有中';
+}
+
+class ImageSharedState extends PreviewScreenState {
+  @override
+  String toString() => '画像共有後';
+}
