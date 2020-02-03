@@ -9,6 +9,7 @@ import 'package:chika_scan/util/scanner_util.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image/image.dart' as imgLib;
 
 class PreviewScreenPage extends StatefulWidget {
   final String imageFilePath;
@@ -33,6 +34,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
   EyesPositionModel _eyesPositionModel;
 
   Image _imageFile;
+  imgLib.Image _imgLibFile;
 
   bool _isDetected;
 
@@ -46,6 +48,12 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
       File(
         widget.imageFilePath,
       ),
+    );
+
+    _imgLibFile = imgLib.decodeImage(
+      File(
+        widget.imageFilePath,
+      ).readAsBytesSync(),
     );
 
     _faceDetector = FirebaseVision.instance.faceDetector(
@@ -90,17 +98,23 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
             try {
               _eyesPositionModel = _scannerUtil.detectPositionOfEyes(
                 faceList: faceList,
-                imageWidth: _imageFile.width,
-                imageHeight: _imageFile.height,
+                imageWidth: _imgLibFile.width.toDouble(),
+                imageHeight: _imgLibFile.height.toDouble(),
                 isUsedFrontCamera: widget.isUsedFrontCamera,
-                campusWidth: _imageFile.width,
-                campusHeight: _imageFile.height,
+                campusWidth: _imgLibFile.width.toDouble(),
+                campusHeight: _imgLibFile.height.toDouble(),
               );
+              _isDetected = true;
+
+              print(_eyesPositionModel.leftEyePosition);
+              print(_eyesPositionModel.rightEyePosition);
             } on CustomException catch (e) {
               if (e.errorCode == ErrorCode.cannotDetectEyes) {
                 print("目を検出できませんでした");
               }
-            } catch (e) {
+            } catch (e, stackTrace) {
+              print(e);
+              print(stackTrace);
               // TODO エラーレポート処理を実装
               throw e;
             }
@@ -117,7 +131,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
         bloc: _bloc,
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: Colors.black87,
+            backgroundColor: Colors.white,
             appBar: AppBar(
               title: Text("プレビュー"),
             ),
@@ -128,16 +142,12 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                 Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
-                    Image.file(
-                      File(
-                        widget.imageFilePath,
-                      ),
-                    ),
+                    _imageFile,
                     _isDetected
                         ? CustomPaint(
                             size: Size(
-                              MediaQuery.of(context).size.width,
-                              MediaQuery.of(context).size.height,
+                              _imgLibFile.width.toDouble(),
+                              _imgLibFile.height.toDouble(),
                             ),
                             painter: ChikaPainter(
                               position1: _eyesPositionModel.leftEyePosition,
