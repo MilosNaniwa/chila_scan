@@ -37,11 +37,6 @@ class ChikaScanScreenBloc
       yield ScanningState();
     }
 
-    // スキャン完了
-    else if (event is OnCompleteScanningEvent) {
-      yield ScannedState();
-    }
-
     // カメラ切り替え要求
     else if (event is OnRequestSwitchingCameraEvent) {
       yield CameraSwitchingState();

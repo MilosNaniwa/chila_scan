@@ -33,11 +33,6 @@ class ScanningState extends ChikaScanScreenState {
   String toString() => 'スキャン中';
 }
 
-class ScannedState extends ChikaScanScreenState {
-  @override
-  String toString() => 'スキャン後';
-}
-
 class CameraSwitchingState extends ChikaScanScreenState {
   @override
   String toString() => 'カメラ切り替え中';

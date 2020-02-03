@@ -98,14 +98,14 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
               );
             } on CustomException catch (e) {
               if (e.errorCode == ErrorCode.cannotDetectEyes) {
-                print("検出できませんでした");
+                print("目を検出できませんでした");
               }
             } catch (e) {
               // TODO エラーレポート処理を実装
               throw e;
             }
           } else {
-            print("検出できませんでした");
+            print("顔を検出できませんでした");
           }
 
           _bloc.add(

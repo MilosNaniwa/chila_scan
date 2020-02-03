@@ -20,11 +20,6 @@ class OnRequestScanningEvent extends ChikaScanScreenEvent {
   String toString() => 'スキャン要求';
 }
 
-class OnCompleteScanningEvent extends ChikaScanScreenEvent {
-  @override
-  String toString() => 'スキャン完了';
-}
-
 class OnRequestSwitchingCameraEvent extends ChikaScanScreenEvent {
   @override
   String toString() => 'カメラ切り替え要求';

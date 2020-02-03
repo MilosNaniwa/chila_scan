@@ -208,18 +208,19 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
 
               if (faceList.length != 0) {
                 try {
-                  _eyesPositionModel = _scannerUtil.detectPositionOfEyes(
-                    faceList: faceList,
-                    imageWidth: availableImage.width.toDouble(),
-                    imageHeight: availableImage.height.toDouble(),
-                    isUsedFrontCamera: _currentCamera == frontCamera,
-                    campusWidth: MediaQuery.of(context).size.width,
-                    campusHeight: MediaQuery.of(context).size.height,
-                  );
+                  setState(() {
+                    _eyesPositionModel = _scannerUtil.detectPositionOfEyes(
+                      faceList: faceList,
+                      imageWidth: availableImage.width.toDouble(),
+                      imageHeight: availableImage.height.toDouble(),
+                      isUsedFrontCamera: _currentCamera == frontCamera,
+                      campusWidth: MediaQuery.of(context).size.width,
+                      campusHeight: MediaQuery.of(context).size.height,
+                    );
 
-                  _bloc.add(
-                    OnCompleteScanningEvent(),
-                  );
+                    _isDetected = true;
+                    _shouldSkipScanning = false;
+                  });
                 } on CustomException catch (e) {
                   if (e.errorCode == ErrorCode.cannotDetectEyes) {
                     setState(() {
@@ -240,16 +241,6 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
             },
           ).catchError(
             (error) => print(error),
-          );
-        }
-
-        // スキャン後
-        else if (state is ScannedState) {
-          _isDetected = true;
-          _shouldSkipScanning = false;
-
-          _bloc.add(
-            OnRequestScanningEvent(),
           );
         }
 
@@ -351,6 +342,8 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
 
         // 写真撮影準備中
         else if (state is ToTakePicturePreparingState) {
+          await _cameraController.stopImageStream();
+
           _bloc.add(
             OnCompletePreparingToTakePictureEvent(),
           );
