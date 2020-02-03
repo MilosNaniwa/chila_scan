@@ -433,7 +433,6 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                                   SizedBox(
                                     width: 45.0,
                                   ),
-                                  // TODO 写真撮影処理
                                   IconButton(
                                     icon: Icon(
                                       Icons.camera,
@@ -446,9 +445,6 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                                     color: Colors.white,
                                     iconSize: 45.0,
                                   ),
-//                                  SizedBox(
-//                                    width: 45.0,
-//                                  ),
                                   IconButton(
                                     icon: Icon(
                                       Icons.switch_camera,
