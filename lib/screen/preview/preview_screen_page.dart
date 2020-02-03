@@ -85,8 +85,8 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
       listener: (context, state) async {
         // 初期化後
         if (state is InitializedState) {
-          print(_imgLibFile.width);
-          print(_imgLibFile.height);
+          print("width: ${_imgLibFile.width}");
+          print("height: ${_imgLibFile.height}");
 
           final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(
             File(
@@ -105,8 +105,11 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                 imageWidth: _imgLibFile.width.toDouble(),
                 imageHeight: _imgLibFile.height.toDouble(),
                 isUsedFrontCamera: widget.isUsedFrontCamera,
-                campusWidth: 300,
-                campusHeight: 400,
+                campusWidth: MediaQuery.of(context).size.width * 0.9,
+                campusHeight: _imgLibFile.height *
+                    (MediaQuery.of(context).size.width *
+                        0.9 /
+                        _imgLibFile.width),
               );
               _isDetected = true;
 
@@ -149,14 +152,20 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                     children: <Widget>[
                       SizedBox(
                         child: _imageFile,
-                        width: 300,
-                        height: 400,
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: _imgLibFile.height *
+                            (MediaQuery.of(context).size.width *
+                                0.9 /
+                                _imgLibFile.width),
                       ),
                       _isDetected
                           ? CustomPaint(
                               size: Size(
-                                300,
-                                400,
+                                MediaQuery.of(context).size.width * 0.9,
+                                _imgLibFile.height *
+                                    (MediaQuery.of(context).size.width *
+                                        0.9 /
+                                        _imgLibFile.width),
                               ),
                               painter: ChikaPainter(
                                 position1: _eyesPositionModel.leftEyePosition,

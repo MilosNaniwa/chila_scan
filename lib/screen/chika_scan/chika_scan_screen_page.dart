@@ -17,6 +17,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image/image.dart' as imgLib;
 import 'package:path_provider/path_provider.dart';
 
 class ChikaScanScreenPage extends StatefulWidget {
@@ -366,6 +367,14 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
           final path = (await getTemporaryDirectory()).path + '$fileName.png';
 
           await _cameraController.takePicture(path);
+
+          final _imgLibFile = imgLib.decodeImage(
+            File(
+              path,
+            ).readAsBytesSync(),
+          );
+          print("width: ${_imgLibFile.width}");
+          print("height: ${_imgLibFile.height}");
 
           final compressedImage = await FlutterImageCompress.compressWithFile(
             path,
