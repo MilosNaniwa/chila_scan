@@ -29,7 +29,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-            android:value="barcode,face" />
+            android:value="face" />
         <!-- To use multiple models: android:value="ocr,label,barcode,face" -->
     </application>
 </manifest>

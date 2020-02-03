@@ -92,9 +92,6 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
       listener: (context, state) async {
         // 初期化後
         if (state is InitializedState) {
-          print("width: ${_imgLibFile.width}");
-          print("height: ${_imgLibFile.height}");
-
           final FirebaseVisionImage visionImage = FirebaseVisionImage.fromFile(
             File(
               widget.imageFilePath,
@@ -111,7 +108,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                 faceList: faceList,
                 imageWidth: _imgLibFile.width.toDouble(),
                 imageHeight: _imgLibFile.height.toDouble(),
-                isUsedFrontCamera: widget.isUsedFrontCamera,
+                isUsedFrontCamera: false,
                 campusWidth: MediaQuery.of(context).size.width * 0.9,
                 campusHeight: _imgLibFile.height *
                     (MediaQuery.of(context).size.width *
@@ -119,9 +116,6 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                         _imgLibFile.width),
               );
               _isDetected = true;
-
-              print(_eyesPositionModel.leftEyePosition);
-              print(_eyesPositionModel.rightEyePosition);
             } on CustomException catch (e) {
               if (e.errorCode == ErrorCode.cannotDetectEyes) {
                 await showDialog(
