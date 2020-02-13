@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-class EyesPositionModel {
+class FaceLandmarkModel {
   final Offset leftEyePosition;
   final Offset rightEyePosition;
+  final Offset noseBasePosition;
 
-  EyesPositionModel({
+  FaceLandmarkModel({
     @required this.leftEyePosition,
     @required this.rightEyePosition,
+    @required this.noseBasePosition,
   });
 }

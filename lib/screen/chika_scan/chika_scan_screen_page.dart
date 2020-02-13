@@ -5,11 +5,12 @@ import 'package:chika_scan/common/custom_exception.dart';
 import 'package:chika_scan/common/error_code.dart';
 import 'package:chika_scan/data_provider/camera_data_provider.dart';
 import 'package:chika_scan/model/camera_model.dart';
-import 'package:chika_scan/model/eyes_position_model.dart';
+import 'package:chika_scan/model/face_landmark_model.dart';
 import 'package:chika_scan/repository/camera_repository.dart';
 import 'package:chika_scan/screen/chika_scan/chika_scan_screen.dart';
 import 'package:chika_scan/screen/preview/preview_screen_page.dart';
 import 'package:chika_scan/util/chika_painter_util.dart';
+import 'package:chika_scan/util/emoji_painter_util.dart';
 import 'package:chika_scan/util/scanner_util.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,7 +48,9 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
 
   bool _isDetected;
 
-  List<EyesPositionModel> _eyesPositionModelList;
+  List<FaceLandmarkModel> _faceLandmarkModelList;
+
+  bool _isEnabledChikaMode;
 
   @override
   void initState() {
@@ -63,6 +66,8 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
 
     _shouldSkipScanning = false;
     _isDetected = false;
+
+    _isEnabledChikaMode = false;
 
     _cameraController = CameraController(
       null,
@@ -213,7 +218,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
               if (faceList.length != 0) {
                 try {
                   setState(() {
-                    _eyesPositionModelList = _scannerUtil.detectPositionOfEyes(
+                    _faceLandmarkModelList = _scannerUtil.detectPositionOfEyes(
                       faceList: faceList,
                       imageWidth: availableImage.width.toDouble(),
                       imageHeight: availableImage.height.toDouble(),
@@ -420,17 +425,24 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                           ),
                           _isDetected
                               ? Stack(
-                                  children: _eyesPositionModelList.map(
+                                  children: _faceLandmarkModelList.map(
                                     (model) {
                                       return CustomPaint(
                                         size: Size(
                                           MediaQuery.of(context).size.width,
                                           MediaQuery.of(context).size.height,
                                         ),
-                                        painter: ChikaPainter(
-                                          position1: model.leftEyePosition,
-                                          position2: model.rightEyePosition,
-                                        ),
+                                        painter: _isEnabledChikaMode
+                                            ? ChikaPainter(
+                                                position1:
+                                                    model.leftEyePosition,
+                                                position2:
+                                                    model.rightEyePosition,
+                                              )
+                                            : EmojiPainter(
+                                                position:
+                                                    model.noseBasePosition,
+                                              ),
                                       );
                                     },
                                   ).toList(),
@@ -446,8 +458,20 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: <Widget>[
-                                  SizedBox(
-                                    width: 45.0,
+                                  IconButton(
+                                    icon: Icon(
+                                      _isEnabledChikaMode
+                                          ? Icons.insert_emoticon
+                                          : Icons.warning,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isEnabledChikaMode =
+                                            !_isEnabledChikaMode;
+                                      });
+                                    },
+                                    color: Colors.white,
+                                    iconSize: 45.0,
                                   ),
                                   IconButton(
                                     icon: Icon(
@@ -474,7 +498,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                                     iconSize: 45.0,
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ],

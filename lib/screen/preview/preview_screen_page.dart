@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:chika_scan/common/custom_exception.dart';
 import 'package:chika_scan/common/error_code.dart';
-import 'package:chika_scan/model/eyes_position_model.dart';
+import 'package:chika_scan/model/face_landmark_model.dart';
 import 'package:chika_scan/screen/preview/preview_screen.dart';
 import 'package:chika_scan/util/chika_painter_util.dart';
 import 'package:chika_scan/util/scanner_util.dart';
@@ -34,7 +34,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 
   FaceDetector _faceDetector;
 
-  List<EyesPositionModel> _eyesPositionModelList;
+  List<FaceLandmarkModel> _faceLandmarkModelList;
 
   Image _imageFile;
   imgLib.Image _imgLibFile;
@@ -104,7 +104,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 
           if (faceList.length != 0) {
             try {
-              _eyesPositionModelList = _scannerUtil.detectPositionOfEyes(
+              _faceLandmarkModelList = _scannerUtil.detectPositionOfEyes(
                 faceList: faceList,
                 imageWidth: _imgLibFile.width.toDouble(),
                 imageHeight: _imgLibFile.height.toDouble(),
@@ -222,7 +222,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                           ),
                           _isDetected
                               ? Stack(
-                                  children: _eyesPositionModelList.map(
+                                  children: _faceLandmarkModelList.map(
                                     (model) {
                                       return CustomPaint(
                                         size: Size(
@@ -252,9 +252,9 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 //                                            _imgLibFile.width),
 //                                  ),
 //                                  painter: ChikaPainter(
-//                                    position1: _eyesPositionModelList
+//                                    position1: _faceLandmarkModelList
 //                                        .first.leftEyePosition,
-//                                    position2: _eyesPositionModelList
+//                                    position2: _faceLandmarkModelList
 //                                        .first.rightEyePosition,
 //                                  ),
 //                                )
