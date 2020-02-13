@@ -67,7 +67,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
     _shouldSkipScanning = false;
     _isDetected = false;
 
-    _isEnabledChikaMode = false;
+    _isEnabledChikaMode = true;
 
     _cameraController = CameraController(
       null,
