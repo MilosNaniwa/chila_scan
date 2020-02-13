@@ -218,7 +218,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
               if (faceList.length != 0) {
                 try {
                   setState(() {
-                    _faceLandmarkModelList = _scannerUtil.detectPositionOfEyes(
+                    _faceLandmarkModelList = _scannerUtil.detectLandmarks(
                       faceList: faceList,
                       imageWidth: availableImage.width.toDouble(),
                       imageHeight: availableImage.height.toDouble(),
@@ -231,7 +231,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                     _shouldSkipScanning = false;
                   });
                 } on CustomException catch (e) {
-                  if (e.errorCode == ErrorCode.cannotDetectEyes) {
+                  if (e.errorCode == ErrorCode.cannotDetectLandmark) {
                     setState(() {
                       _isDetected = false;
                       _shouldSkipScanning = false;
@@ -386,6 +386,7 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
               builder: (context) => PreviewScreenPage(
                 imageFilePath: path,
                 isUsedFrontCamera: _currentCamera == frontCamera,
+                isEnabledChikaMode: _isEnabledChikaMode,
               ),
               fullscreenDialog: true,
             ),
@@ -440,8 +441,9 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                                                     model.rightEyePosition,
                                               )
                                             : EmojiPainter(
-                                                position:
-                                                    model.noseBasePosition,
+                                                centerPosition:
+                                                    model.topCenterPosition,
+                                                faceSize: model.faceSize * 2,
                                               ),
                                       );
                                     },

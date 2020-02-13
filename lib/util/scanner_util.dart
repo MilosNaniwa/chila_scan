@@ -7,7 +7,7 @@ import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 import 'package:flutter/material.dart';
 
 class ScannerUtil {
-  List<FaceLandmarkModel> detectPositionOfEyes({
+  List<FaceLandmarkModel> detectLandmarks({
     @required List<Face> faceList,
     @required double imageWidth,
     @required double imageHeight,
@@ -20,7 +20,8 @@ class ScannerUtil {
     for (Face face in faceList) {
       Offset _leftEyePosition;
       Offset _rightEyePosition;
-      Offset _noseBasePosition;
+      Offset _centerPosition;
+      Size _faceSize;
 
       FaceLandmark leftEye = face.getLandmark(
         FaceLandmarkType.leftEye,
@@ -30,9 +31,8 @@ class ScannerUtil {
         FaceLandmarkType.rightEye,
       );
 
-      FaceLandmark noseBase = face.getLandmark(
-        FaceLandmarkType.noseBase,
-      );
+      Offset tmpCenterPosition = face.boundingBox.topCenter;
+      _faceSize = face.boundingBox.size;
 
       if (leftEye != null && rightEye != null) {
         double _imageWidth;
@@ -56,10 +56,6 @@ class ScannerUtil {
                 (rightEye.position.dx * (campusWidth / _imageWidth) * 1.25),
             rightEye.position.dy * (campusHeight / _imageHeight),
           );
-          _noseBasePosition = Offset(
-            campusWidth - (noseBase.position.dx * (campusWidth / _imageWidth)),
-            noseBase.position.dy * (campusHeight / _imageHeight),
-          );
         } else {
           _leftEyePosition = Offset(
             leftEye.position.dx * (campusWidth / _imageWidth) * 0.75,
@@ -69,9 +65,9 @@ class ScannerUtil {
             rightEye.position.dx * (campusWidth / _imageWidth) * 1.25,
             rightEye.position.dy * (campusHeight / _imageHeight),
           );
-          _noseBasePosition = Offset(
-            noseBase.position.dx,
-            noseBase.position.dy * (campusHeight / _imageHeight),
+          _centerPosition = Offset(
+            tmpCenterPosition.dx * (campusWidth / _imageWidth),
+            tmpCenterPosition.dy * (campusHeight / _imageHeight),
           );
         }
 
@@ -79,12 +75,13 @@ class ScannerUtil {
           FaceLandmarkModel(
             leftEyePosition: _leftEyePosition,
             rightEyePosition: _rightEyePosition,
-            noseBasePosition: _noseBasePosition,
+            topCenterPosition: _centerPosition,
+            faceSize: _faceSize,
           ),
         );
       } else {
         throw CustomException(
-          errorCode: ErrorCode.cannotDetectEyes,
+          errorCode: ErrorCode.cannotDetectLandmark,
         );
       }
     }

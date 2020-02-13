@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class FaceLandmarkModel {
   final Offset leftEyePosition;
   final Offset rightEyePosition;
-  final Offset noseBasePosition;
+  final Offset topCenterPosition;
+  final Size faceSize;
 
   FaceLandmarkModel({
     @required this.leftEyePosition,
     @required this.rightEyePosition,
-    @required this.noseBasePosition,
+    @required this.topCenterPosition,
+    @required this.faceSize,
   });
 }

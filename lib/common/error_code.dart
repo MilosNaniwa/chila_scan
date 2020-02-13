@@ -1,3 +1,3 @@
 class ErrorCode {
-  static const cannotDetectEyes = "cannot_detect_eyes";
+  static const cannotDetectLandmark = "cannot_detect_landmark";
 }

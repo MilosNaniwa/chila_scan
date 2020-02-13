@@ -6,6 +6,7 @@ import 'package:chika_scan/common/error_code.dart';
 import 'package:chika_scan/model/face_landmark_model.dart';
 import 'package:chika_scan/screen/preview/preview_screen.dart';
 import 'package:chika_scan/util/chika_painter_util.dart';
+import 'package:chika_scan/util/emoji_painter_util.dart';
 import 'package:chika_scan/util/scanner_util.dart';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
@@ -17,10 +18,12 @@ import 'package:image/image.dart' as imgLib;
 class PreviewScreenPage extends StatefulWidget {
   final String imageFilePath;
   final bool isUsedFrontCamera;
+  final bool isEnabledChikaMode;
 
   PreviewScreenPage({
     @required this.imageFilePath,
     @required this.isUsedFrontCamera,
+    @required this.isEnabledChikaMode,
   });
 
   @override
@@ -104,7 +107,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
 
           if (faceList.length != 0) {
             try {
-              _faceLandmarkModelList = _scannerUtil.detectPositionOfEyes(
+              _faceLandmarkModelList = _scannerUtil.detectLandmarks(
                 faceList: faceList,
                 imageWidth: _imgLibFile.width.toDouble(),
                 imageHeight: _imgLibFile.height.toDouble(),
@@ -117,7 +120,7 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
               );
               _isDetected = true;
             } on CustomException catch (e) {
-              if (e.errorCode == ErrorCode.cannotDetectEyes) {
+              if (e.errorCode == ErrorCode.cannotDetectLandmark) {
                 await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -235,29 +238,22 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                                                   0.9 /
                                                   _imgLibFile.width),
                                         ),
-                                        painter: ChikaPainter(
-                                          position1: model.leftEyePosition,
-                                          position2: model.rightEyePosition,
-                                        ),
+                                        painter: widget.isEnabledChikaMode
+                                            ? ChikaPainter(
+                                                position1:
+                                                    model.leftEyePosition,
+                                                position2:
+                                                    model.rightEyePosition,
+                                              )
+                                            : EmojiPainter(
+                                                centerPosition:
+                                                    model.topCenterPosition,
+                                                faceSize: model.faceSize * 2,
+                                              ),
                                       );
                                     },
                                   ).toList(),
                                 )
-//                          CustomPaint(
-//                                  size: Size(
-//                                    MediaQuery.of(context).size.width * 0.9,
-//                                    _imgLibFile.height *
-//                                        (MediaQuery.of(context).size.width *
-//                                            0.9 /
-//                                            _imgLibFile.width),
-//                                  ),
-//                                  painter: ChikaPainter(
-//                                    position1: _faceLandmarkModelList
-//                                        .first.leftEyePosition,
-//                                    position2: _faceLandmarkModelList
-//                                        .first.rightEyePosition,
-//                                  ),
-//                                )
                               : Container(),
                         ],
                       ),
