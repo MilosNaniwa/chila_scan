@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class EmojiPainter extends CustomPainter {
-  final Offset centerPosition;
-  final Size faceSize;
+  final Offset position;
+  final double fontSize;
 
   EmojiPainter({
-    @required this.centerPosition,
-    @required this.faceSize,
+    @required this.position,
+    @required this.fontSize,
   });
 
   @override
@@ -14,7 +14,7 @@ class EmojiPainter extends CustomPainter {
     final textSpan = TextSpan(
       text: '😄',
       style: TextStyle(
-        fontSize: faceSize.height,
+        fontSize: fontSize,
       ),
     );
     final textPainter = TextPainter(
@@ -28,7 +28,7 @@ class EmojiPainter extends CustomPainter {
       maxWidth: 0,
     );
 
-    textPainter.paint(canvas, centerPosition);
+    textPainter.paint(canvas, position);
   }
 
   @override

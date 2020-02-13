@@ -439,11 +439,14 @@ class _ChikaScanScreenPage extends State<ChikaScanScreenPage> {
                                                     model.leftEyePosition,
                                                 position2:
                                                     model.rightEyePosition,
+                                                strokeWidth:
+                                                    model.faceSize.height * 0.2,
                                               )
                                             : EmojiPainter(
-                                                centerPosition:
+                                                position:
                                                     model.topCenterPosition,
-                                                faceSize: model.faceSize * 2,
+                                                fontSize:
+                                                    model.faceSize.height * 2,
                                               ),
                                       );
                                     },

@@ -244,11 +244,13 @@ class _PreviewScreenPage extends State<PreviewScreenPage> {
                                                     model.leftEyePosition,
                                                 position2:
                                                     model.rightEyePosition,
+                                                strokeWidth:
+                                                    model.faceSize.height * 0.5,
                                               )
                                             : EmojiPainter(
-                                                centerPosition:
+                                                position:
                                                     model.topCenterPosition,
-                                                faceSize: model.faceSize * 2,
+                                                fontSize: model.faceSize.height,
                                               ),
                                       );
                                     },
